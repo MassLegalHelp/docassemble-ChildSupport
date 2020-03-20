@@ -1,0 +1,154 @@
+mandatory: True
+code: |
+  if wants_intro:
+    seen_help
+  
+  if wants_lawyer:
+    talk_to_a_lawyer
+  
+  seen_change_support_order_intro
+  seen_ask_dor_intro
+  seen_ask_dor_intro
+  seen_going_court_intro
+
+  if wants_dor_filing_help:
+    dor_filing_help
+  seen_intro = True
+---
+question: |
+  ${question_id("intro_1")} Welcome
+subquestion: |
+  The only way to change a child support order is to get a new court order. The court order that changes a child support order is called a Modification.
+
+  If you want a quick introduction to how this program works, click 'How-to'.
+
+  To skip the introduction, click 'Next'.
+field: wants_intro
+buttons:
+  - How-to: True
+  - Next: False
+---  
+question: |
+  ${question_id("intro_2")} I am not a lawyer
+subquestion: |
+  I will ask you questions to help you fill out a Complaint for Modification of child support and the other forms you need.
+
+  I cannot {advise} you or tell you what you **should** do.
+terms:
+  advise: |
+    Only a lawyer can give you advice about the best thing for you to do and answer your personal legal questions. It is against the law for anyone else to tell you what the best legal decisions would be for you.
+field: wants_lawyer
+buttons:
+  - I think I need to talk to a lawyer: True
+  - Next: False
+---
+question: |
+  ${question_id("intro_3")} Change Child Support Order
+subquestion: |
+  If you need to change your child support order you can:
+  
+  1. ask the Department of Revenue Child Support Enforcement Division to take your case to court,
+  1. go to court yourself to ask for a child support order, or
+  1. get your own lawyer to take the case.
+field: seen_change_support_order_intro
+---
+comment: |
+  Broken link for child-support-collected
+question: |
+  ${question_id("intro_4")} Asking DOR for help?
+subquestion: |
+  You can always ask the Department of Revenue's Child Support Enforcement Division (DOR) for help if you do not feel up to filing by yourself.
+
+  If you do not feel safe, I can help you fill out a form that asks the court to keep your address secret, but if you still feel it is not safe for you to file on your own, ask DOR for help.
+field: seen_ask_dor_intro
+help:
+  label: What do I need to know about asking DOR for help?
+  heading: What do I need to know about asking DOR for help?
+  content: |
+    When you apply for DOR services, it may take a while before they get to your case. For more information, read [The DOR Can Help](http://www.masslegalhelp.org/children-and-families/child-support-collected) on MassLegalHelp.
+---
+question: |
+  ${question_id("intro_5")} Going to court?
+subquestion: |
+  A quick list of things you must do if you decide to go to court yourself:
+  
+  1. file a Complaint for Modification;
+  1. file documents that give the court and the other parent more information about your finances;
+  1. {serve} the other parent with the complaint and a summons; and
+  1. go to court to explain your case.
+field: seen_going_court_intro
+help:
+  label: Is this all?
+  heading: Is this all?
+  content: |
+    To find out more about filing a child support case, [see Changing a Child Support Order](http://www.masslegalhelp.org/children-and-families/child-support-changing-it) on MassLegalHelp.
+    If you decide you want to do this case yourself and I can help you, I will walk you through all the forms and steps you need.
+    I will also give you a set of instructions so you know what to do and what you can expect.
+terms:
+  serve: |
+    In this case, "serving" the complaint and summons means delivering court forms to the other parent.
+---
+question: |
+  ${question_id("intro_6")} Do you want to file a complaint for support yourself, or do you want to ask DOR for help?
+field: wants_dor_filing_help
+buttons:
+  - Ask DOR for help: True
+  - File myself: False
+---
+comment: Utility questions
+---
+question: |
+  ${question_id("intro_1.1")} Introduction to Docassemble
+subquestion: |
+  If you click words that are green - like {Complaint to Modify Child Suport} another bubble will pop-up with more information.
+
+  Any words that are blue will take you to a website in another window.
+
+  If you go to another website you can close that website. I will still be here, waiting for you.
+
+  Try clicking [Changing a Child Support Order](https://www.masslegalhelp.org/children-and-families/child-support-changing-it). Then close that window.
+terms:
+  Complaint to Modify Child Suport: | 
+    'Modifying' is what the court calls changing a child support order.
+field: seen_help
+---
+
+---
+comment: Terminating questions
+---
+comment: |
+  Broken exit link
+event: talk_to_a_lawyer
+question: |
+  ${question_id("intro_end_1")} Talk to a lawyer
+subquestion: |
+  If your income is low enough, you may be able to get [free legal help](http://masslegalhelp.org/find-legal-aid).
+
+  There are also a number of lawyer referral services across the state. These lawyers are not free.
+
+  * [Mass Bar Lawyer Referral & Information Service](http://www.massbar.org/lawhelp/need_lawyer)
+  * [National Lawyer Guild](http://www.nlgmass.org/lrs)
+  * [Boston Bar Association](http://www.bostonbar.org/LRS)
+  * [Middlesex Bar Association](http://www.mcbalaw.com/displaycommon.cfm?an=1&subarticlenbr=7)
+  * [Bristol County Bar Association](http://bristolcountybar.org/lawyer_referral_service.htm#request)
+  * [Essex Bar Association LRS](http://www.essexcountybar.org/publish/page2.html)
+  * [Hampden Bar Association](http://www.hcbar.org/html/public.htm)
+  * [Worcester Bar Association](http://www.worcestercountybar.org/index.php/component/content/article?id=11)
+buttons:
+  - Exit: exit
+    url: https://www.masslegalhelp.org/childlren-and-families/child-support
+---
+event: dor_filing_help
+question: |
+  ${question_id("intro_end_2")} Assistance from the Department of Revenue
+subquestion: |
+  If you need the Department of Revenue to help you,
+
+  1. go to [their website](http://www.mass.gov/dor/child-support/your-child-support/),
+  1. Download their [application and instructions](http://www.mass.gov/dor/child-support/apply-for-services/),
+  1. phone them: 800-332-2733 (617-660-1234 for local callers in the Boston Area), or
+  1. [E-mail](http://www.mass.gov/dor/child-support/submit-questions-comments-and-suggestions.html) them.
+buttons:
+  - Exit: exit
+    url: https://www.masslegalhelp.org/childlren-and-families/child-support
+---
