@@ -28,9 +28,10 @@ sections:
 ---
 include:
   - intro.yml
+  - util.yml
 ---
-modules:
-  - .util
+objects:
+  - client: Individual
 ---
 mandatory: True
 code: |

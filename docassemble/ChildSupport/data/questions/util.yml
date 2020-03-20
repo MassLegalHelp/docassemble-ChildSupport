@@ -1,0 +1,6 @@
+code: |
+  def question_id(message):
+    if defined("debug_enabled") and debug_enabled:
+      return "[" + message + "] "
+    else:
+      return ""

@@ -1,4 +1,3 @@
-mandatory: True
 code: |
   if wants_intro:
     seen_help
@@ -13,6 +12,30 @@ code: |
 
   if wants_dor_filing_help:
     dor_filing_help
+
+  if not intro_qualifies:
+    additional_message = "Unfortunately, I cannot help you fill out your child support order. "
+    talk_to_lawyer_alt
+  
+  client.name.first
+
+  if children_relationship == "neither":
+    additional_message = "I am sorry. I can only help you if you are a parent. "
+    talk_to_lawyer_alt
+
+  if changes_to_be_filed.all_false("amount", "parent", "health", "end", "extend") and changes_to_be_filed["other"]:
+    additional_message = "If you want to change your child support order in any other way, you need to speak with a lawyer.\n"
+    talk_to_lawyer_alt
+
+  seen_important_filing
+
+  if important_information_talk_to_lawyer:
+    additional_message = ""
+    talk_to_lawyer_alt
+
+  seen_overview_1
+  seen_overview_2
+  seen_overview_3
   seen_intro = True
 ---
 question: |
@@ -25,8 +48,8 @@ subquestion: |
   To skip the introduction, click 'Next'.
 field: wants_intro
 buttons:
-  - How-to: True
   - Next: False
+  - How-to: True
 ---  
 question: |
   ${question_id("intro_2")} I am not a lawyer
@@ -39,8 +62,8 @@ terms:
     Only a lawyer can give you advice about the best thing for you to do and answer your personal legal questions. It is against the law for anyone else to tell you what the best legal decisions would be for you.
 field: wants_lawyer
 buttons:
-  - I think I need to talk to a lawyer: True
   - Next: False
+  - I think I need to talk to a lawyer: True
 ---
 question: |
   ${question_id("intro_3")} Change Child Support Order
@@ -92,8 +115,187 @@ question: |
   ${question_id("intro_6")} Do you want to file a complaint for support yourself, or do you want to ask DOR for help?
 field: wants_dor_filing_help
 buttons:
-  - Ask DOR for help: True
   - File myself: False
+  - Ask DOR for help: True
+---
+question: |
+  Before we begin...
+subquestion: |
+  Right now, I cannot help everyone who needs to change a child support order.
+  
+  I can only help you if **all 4** of the following are true:
+  
+    1. You are the mother or father of the children in the support order;
+  1. You get child support from the other parent or pay child support to the other parent;
+  1. {Your income} is $75,000 or less, and
+  1. Both parents live in the US.
+  Are all 4 of these true?
+yesno: intro_qualifies
+terms: 
+  Your income: |
+    This is only **your** income.
+    **Do not include the other parent's income**
+help:
+  label: What do you mean by "mother" or "father"?
+  heading: What do you mean by "mother" or "father"?
+  content: |
+    You do not have to be a birth mother or father. If you or the other parent adopted the child or children supported by this order, I can still help you fill out the forms.
+---
+question: | 
+  What is your name?
+fields:
+  - First name: client.name.first
+  - Middle name: client.name.middle
+    required: False
+  - Last name: client.name.last
+---
+question:
+  ${ client.name.first }, how are you related to the children in the child support order?
+field: children_relationship
+choices:
+  - I am the mother: mother
+  - I am the father: father
+  - Neither: neither
+---
+question: |
+  Changes I can help you file
+subquestion: |
+  I can help you fill out the forms for **some** changes.
+  For other changes you will need to talk to a lawyer.
+  What do you need to change in the order you have now, ${ client.name.first }?
+fields:
+  - no label: changes_to_be_filed 
+    datatype: checkboxes
+    choices:
+      - Change the amount of the order: amount
+      - Change the parent who gets child support, or pays it: parent
+      - Change the health insurance order: health
+      - End the order: end
+      - Extend the order: extend
+      - Other: other
+---
+question: |
+  There are a few important things you should know:
+subquestion: |
+  1. File a complaint for modification as soon as you decide that you need to change the child support order.
+  1. A modification can only change the order from the date the complaint is "served" on the defendant. It cannot change anything in the order before the date you serve the defendant.
+field: seen_important_filing
+help:
+  label: What do you mean?
+  heading: What do you mean?
+  content: |
+    **For example:**
+
+      In January, you learn that you need to lower the amount of child support you pay.
+      
+      Your existing order is for $100/week.
+      
+      You file a **Complaint to Modify on February 10**. You {serve} the complaint on the defendant on February 27, and the court orders the lower amount of $80/week. 
+      
+      **You still owe $100/week in child support payments for the weeks up to Feb 27.** Only for the week beginning Feb 27 and the weeks after, can you start paying $80/week.
+terms:
+  serve: |
+    "Serving" the complaint means delivering it to the defendant.
+---
+comment: |
+  Broken link Parents ask about modification
+question: |
+  There are a few important things you should know:
+subquestion: |
+  3. You can only get a modification if {certain things} have changed.
+
+  If there has been a change click 'Next'.
+
+  If nothing has changed, the judge probably will not change the order.
+
+  To get legal advice, click the button 'Talk to a lawyer'.
+field: important_information_talk_to_lawyer
+buttons: 
+  - Next: False
+  - Talk to a lawyer: True
+help:
+  label: What are other examples of changes that matter?
+  heading: What are other examples of changes that matter?
+  content: |
+    More examples of other changes that matter are:
+
+      1. a parent's income changes;
+      1. a child leaves the home of the parent he was living with;
+      1. if the current order lasts until a child turns 18, 21 or 23 and one of your children has an 18th, 21st or 23 birthday, a child dies, or both parents in the current order have another child together; or
+      1. a support order for other children changes or ends.
+      
+      Read [Changing a Child Support Order](http://masslegalhelp.org/children-and-families/child-support-changing-it) on MassLegalHelp and watch the videos [Parents ask about Modification](http://masslegalhelp.org/children-and-families/child-support-material-change-in-circumstance-videos).
+terms:
+  certain things: |
+    These changes include:
+
+      1. The existing order is at least three years old.
+      1. The Child Support Guidelines say the amount of child support should be different from the amount in the current order.
+      1. Health insurance that was available at reasonable cost is no longer available or no longer available at reasonable cost. Or, health insurance that was not available at reasonable cost before, now is available at reasonable cost.
+      
+      Click the 'What are other examples of changes that matter? button to see other changes that matter.
+      
+      Read [Changing a Child Support Order](http://masslegalhelp.org/children-and-families/child-support-changing-it) on MassLegalHelp and watch the videos [Parents ask about Modification](http://masslegalhelp.org/children-and-families/child-support-material-change-in-circumstance-videos).
+---
+comment: |
+  Broken link: child support, how much. Also, no links for Public assistance and Motion?
+question: |
+  Overview
+subquestion: |
+  We will go through 9 or 10 steps to fill in all the forms you will need at court. Your forms tell the court about:
+
+  1. the current child support order;
+  1. the changes that have happened since that order;
+  1. the changes you need the court to make;
+  1. your finances for the [Financial Statement](http://www.masslegalhelp.org/children-and-families/probate-and-family-court-financial-statement#what);
+  1. the other parent's finances, if you know them, for the [Child Support Guidelines](http://www.masslegalhelp.org/children-and-families/child-support-guidelines) worksheet; and
+  1. any Public Assistance you or your children may have had.
+field: seen_overview_1
+help: 
+  label: What are these forms?
+  heading: What are these forms?
+  content: |
+    The forms I will help you complete are:
+
+      1. a [Complaint for Modification of Child Support](http://masslegalhelp.org/children-and-families/child-support-change-how#on_your_own);
+      2. a [Child Support Guidelines Worksheet](http://masslegalhelp.org/children-and-families/child-support-how-much). Any time you are in court for child support, you must file this form. The worksheet calculates the amount of the child support payment;
+      3. a [Financial Statement](http://www.masslegalhelp.org/children-and-families/probate-and-family-court-financial-statement#what) - whenever you ask the court to make a decision about child support, you must file a financial statement to let the court and the other parent know the state of your finances;
+      4. an Affidavit of Public Assistance. The Department of Revenue is involved in collecting and paying child support for parents and children who get public benefits. This form keeps them up to date...
+      
+      Learn even more about these forms on [MassLegalHelp.org](http://www.masslegalhelp.org/).
+---    
+question: |
+  Overview (2)
+subquestion: |
+  If your answers show that you may not have to pay court costs, I will also ask you a few more questions so you can file an {Affidavit of Indigency}.
+
+  If it is not safe for you to share your address or phone number, or where you work, we will also fill out a Motion to Impound and Affidavit to ask the court to keep this information secret.
+field: seen_overview_2
+terms:
+  Affidavit of Indigency:
+    If you cannot afford the cost of this case, you may be able to have the state pay the court fees and costs.
+
+    You can use the [Affidavit of Indigency](http://www.masslegalhelp.org/housing/forms/indigency-affidavit) and its Supplement to ask the court to have the state pay court fees and costs.
+help:
+  label: What are these forms?
+  heading: What are these forms?
+  content: |
+    We may also complete:
+
+      5. an [Affidavit of Indigency](http://www.masslegalhelp.org/housing/forms/indigency-affidavit). This is the form you file if you cannot afford court costs and fees.
+      5. a Motion to Impound and an Affidavit.This form asks the court to keep your whereabouts safe and out of the public in court records.
+      
+      Learn even more about these forms on [MassLegalHelp.org](http://www.MassLegalHelp.org).
+---
+question: |
+  Overview 3
+subquestion: |
+  Finally, please remember I am helping you fill out legal documents that you will be filing in a court of law.
+
+  It is very important to make sure that all the information you put in these forms is true as far as you know.
+field: seen_overview_3
+
+
 ---
 comment: Utility questions
 ---
@@ -110,8 +312,24 @@ subquestion: |
 terms:
   Complaint to Modify Child Suport: | 
     'Modifying' is what the court calls changing a child support order.
+  Modify Child Support: |
+    It is a good idea to read [Changing a Child Support Order](http://www.masslegalhelp.org/children-and-families/child-support-changing-it) on MassLegalHelp.org.
+    Click the blue words.
+    A new window will open. When you are done reading, you can close that window.
+    I will wait for you. We can keep going when you are ready.
+    Click anywhere to close this message, and 'Back to question' to see the previous question. Then 'Next' to keep going.
+help:
+  label: Learn more
+  heading: Learn more
+  content: |
+    You can see a bubble with more information pops up.
+    If you click words that are underlined and red - like
+    {Modify Child Support} - another bubble will pop-up with more information.  
+    Any words that are blue and underlined will take you to a website in another window. Click [Changing a Child Support Order](http://www.masslegalhelp.org/children-and-families/child-support-changing-it). You will go to another website. You can close that website. I will still be here, waiting for you.
+    Click 'Close' to close any Learn More bubbles or bubbles that pop-up after you click red underlined text.
 field: seen_help
 ---
+
 
 ---
 comment: Terminating questions
@@ -148,6 +366,29 @@ subquestion: |
   1. Download their [application and instructions](http://www.mass.gov/dor/child-support/apply-for-services/),
   1. phone them: 800-332-2733 (617-660-1234 for local callers in the Boston Area), or
   1. [E-mail](http://www.mass.gov/dor/child-support/submit-questions-comments-and-suggestions.html) them.
+buttons:
+  - Exit: exit
+    url: https://www.masslegalhelp.org/childlren-and-families/child-support
+---
+comment: |
+  Broken exit link
+event: talk_to_lawyer_alt
+question: |
+  ${question_id("intro_end_3")} Free legal aid
+subquestion: |
+  ${ additional_message }
+  You may be able to get legal help for free, try [free legal help](http://masslegalhelp.org/find-legal-aid).
+
+  There are also a number of lawyer referral services across the state. These lawyers are not free.
+
+  * [Mass Bar Lawyer Referral & Information Service](http://www.massbar.org/lawhelp/need_lawyer)
+  * [National Lawyer Guild](http://www.nlgmass.org/lrs)
+  * [Boston Bar Association](http://www.bostonbar.org/LRS)
+  * [Middlesex Bar Association](http://www.mcbalaw.com/displaycommon.cfm?an=1&subarticlenbr=7)
+  * [Bristol County Bar Association](http://bristolcountybar.org/lawyer_referral_service.htm#request)
+  * [Essex Bar Association LRS](http://www.essexcountybar.org/publish/page2.html)
+  * [Hampden Bar Association](http://www.hcbar.org/html/public.htm)
+  * [Worcester Bar Association](http://www.worcestercountybar.org/index.php/component/content/article?id=11)
 buttons:
   - Exit: exit
     url: https://www.masslegalhelp.org/childlren-and-families/child-support
