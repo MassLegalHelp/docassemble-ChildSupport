@@ -1,0 +1,38 @@
+metadata:
+  title: |
+    Complaint to Modify Child Support
+  short title: |
+    Child Support
+  authors:
+    - name: Kendall Garner
+      organization: Massachusetts Law Reform Institute
+  continue button label: Next
+---
+features:
+  navigation: True
+  progress bar: True
+  question help button: True
+---
+sections:
+  - Introduction
+  - Current Child Support Order
+  - Changes that Matter
+  - Requested Changes
+  - Child Support Guidlines Worksheet
+  - Financial Statements:
+    - Self-Employed/Rental Income
+    - Deductions/Expenses
+    - Assets and Liabilities
+  - Affidavit of Public Assistance
+  - Affidvit of Indigency
+---
+include:
+  - intro.yml
+---
+modules:
+  - .util
+---
+mandatory: True
+code: |
+  debug_enabled = True
+  seen_intro
