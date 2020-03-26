@@ -28,12 +28,17 @@ sections:
 ---
 include:
   - intro.yml
+  - current_order.yml
   - util.yml
 ---
 objects:
   - client: Individual
+  - client.original_order: DADict
+  - client.original_order.children: DAList.using(ask_number=True, object_type=Individual)
+  - other_parent: Individual
 ---
 mandatory: True
 code: |
   debug_enabled = True
   seen_intro
+  seen_current_order
